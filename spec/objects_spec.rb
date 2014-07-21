@@ -114,6 +114,15 @@ describe FuelSDK::SentEvent do
   its(:id){ should eq 'SentEvent' }
 end
 
+describe FuelSDK::TriggeredSendDefinition do
+
+  let(:object) { FuelSDK::TriggeredSendDefinition.new }
+  subject{ object }
+
+  it_behaves_like 'Soap Read Only Object'
+  its(:id){ should eq 'TriggeredSendDefinition' }
+end
+
 describe FuelSDK::Subscriber do
 
   let(:object) { FuelSDK::Subscriber.new }
