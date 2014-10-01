@@ -22,10 +22,10 @@ describe FuelSDK::Soap do
   it { should_not respond_to(:endpoint=) }
 
   it { should respond_to(:soap_client) }
-  
+
   it { should respond_to(:package_name) }
   it { should respond_to(:package_name=) }
-  
+
   it { should respond_to(:package_folders) }
   it { should respond_to(:package_folders=) }
 
@@ -47,6 +47,23 @@ describe FuelSDK::Soap do
           }
         }
       )
+    end
+  end
+
+  describe 'private#soap_request' do
+
+    let(:request) { 'CreateRequest' }
+    let(:message) { {'x' => 'y'} }
+    let(:action) { :create }
+    let(:soap_client){ double }
+
+    before do
+      subject.stub(:soap_client).and_return(soap_client)
+    end
+
+    it 'should add the message name with a combination of the operation plus "Request"' do
+      subject.soap_client.should_receive(:call).with(action, {:message=> message, :message_tag=>:CreateRequest})
+      subject.send(:soap_request,action, message)
     end
   end
 
