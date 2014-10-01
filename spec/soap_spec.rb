@@ -69,7 +69,7 @@ describe FuelSDK::Soap do
       end
     end
 
-    describe 'retriebe messages' do
+    describe 'retrieve messages' do
 
       let(:action) { :retrieve }
 
