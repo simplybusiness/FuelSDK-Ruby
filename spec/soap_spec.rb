@@ -52,7 +52,6 @@ describe FuelSDK::Soap do
 
   describe 'private#soap_request' do
 
-    let(:request) { 'CreateRequest' }
     let(:message) { {'x' => 'y'} }
     let(:action) { :create }
     let(:soap_client){ double }
