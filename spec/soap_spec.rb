@@ -52,18 +52,33 @@ describe FuelSDK::Soap do
 
   describe 'private#soap_request' do
 
-    let(:message) { {'x' => 'y'} }
-    let(:action) { :create }
     let(:soap_client){ double }
+    let(:message) { {'x' => 'y'} }
 
     before do
       subject.stub(:soap_client).and_return(soap_client)
     end
 
-    it 'should add the message name with a combination of the operation plus "Request"' do
-      subject.soap_client.should_receive(:call).with(action, {:message=> message, :message_tag=>:CreateRequest})
-      subject.send(:soap_request,action, message)
+    describe 'create messages' do
+
+      let(:action) { :create }
+
+      it 'should add the message name with a combination of the operation plus "Request"' do
+        subject.soap_client.should_receive(:call).with(action, {:message=> message, :message_tag=>:CreateRequest})
+        subject.send(:soap_request,action, message)
+      end
     end
+
+    describe 'retriebe messages' do
+
+      let(:action) { :retrieve }
+
+      it 'should add the message name with a combination of the operation plus "Request"' do
+        subject.soap_client.should_receive(:call).with(action, {:message=> message, :message_tag=>:RetrieveRequestMsg})
+        subject.send(:soap_request,action, message)
+      end
+    end
+
   end
 
   describe 'requests' do

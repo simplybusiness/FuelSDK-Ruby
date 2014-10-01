@@ -231,7 +231,12 @@ module FuelSDK
         response = action.eql?(:describe) ? DescribeResponse : SoapResponse
         retried = false
         begin
-          rsp = soap_client.call(action, :message => message, :message_tag => :"#{action.to_s.capitalize}Request")
+          message_tag = if action == :retrieve
+                          :'RetrieveRequestMsg'
+                        else
+                          :"#{action.to_s.capitalize}Request"
+                        end
+          rsp = soap_client.call(action, :message => message, :message_tag => message_tag)
         rescue
           raise if retried
           retried = true
