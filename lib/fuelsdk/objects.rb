@@ -255,12 +255,12 @@ module FuelSDK
     
     def cleanProps
         # If the ID property is specified for the destination then it must be a list import
-        if properties.has_key?('DestinationObject') then
-            if properties['DestinationObject'].has_key?('ID') then
-                properties[:attributes!] = { 'DestinationObject' => { 'xsi:type' => 'tns:List'}} 
+        if properties.first.has_key?('DestinationObject') then
+            if properties.first['DestinationObject'].has_key?('ID') then
+                properties.first[:attributes!] = { 'DestinationObject' => { 'xsi:type' => 'tns:List'}} 
             end 
         end 
-    end 
+    end
   end
   
   
