@@ -16,31 +16,31 @@ module FuelSDK
         def post
           if self.respond_to?('folder_property') && !self.folder_id.nil?
 			properties[self.folder_property]  = self.folder_id
-		  elsif self.respond_to?('folder_property') && !self.folder_property.nil? && !client.package_name.nil? then 
+		  elsif self.respond_to?('folder_property') && !self.folder_property.nil? && !client.package_name.nil? then
 			  if client.package_folders.nil? then
 				  getPackageFolder = ET_Folder.new
 				  getPackageFolder.authStub = client
 				  getPackageFolder.properties = ["ID", "ContentType"]
 				  getPackageFolder.filter = {"Property" => "Name", "SimpleOperator" => "equals", "Value" => client.package_name}
 				  resultPackageFolder = getPackageFolder.get
-				  if resultPackageFolder.status then 
+				  if resultPackageFolder.status then
 					  client.package_folders = {}
 					  resultPackageFolder.results.each do |value|
 						  client.package_folders[value[:content_type]] = value[:id]
 					  end
 				  else
 					  raise "Unable to retrieve folders from account due to: #{resultPackageFolder.message}"
-				  end 
-			  end 
-			  
-			  if !client.package_folders.has_key?(self.folder_media_type) then  
+				  end
+			  end
+
+			  if !client.package_folders.has_key?(self.folder_media_type) then
 				  if client.parentFolders.nil? then
 					  parentFolders = ET_Folder.new
 					  parentFolders.authStub = client
 					  parentFolders.properties = ["ID", "ContentType"]
 					  parentFolders.filter = {"Property" => "ParentFolder.ID", "SimpleOperator" => "equals", "Value" => "0"}
 					  resultParentFolders = parentFolders.get
-					  if resultParentFolders.status then 
+					  if resultParentFolders.status then
 						  client.parent_folders = {}
 						  resultParentFolders.results.each do |value|
 							  client.parent_folders[value[:content_type]] = value[:id]
@@ -49,18 +49,18 @@ module FuelSDK
 						  raise "Unable to retrieve folders from account due to: #{resultParentFolders.message}"
 					  end
 				  end
-				  
+
 				  newFolder = ET_Folder.new
 				  newFolder.authStub = client
 				  newFolder.properties = {"Name" => client.package_name, "Description" => client.package_name, "ContentType"=> self.folder_media_type, "IsEditable"=>"true", "ParentFolder" => {"ID" => client.parentFolders[self.folder_media_type]}}
 				  folderResult = newFolder.post
 				  if folderResult.status then
 					  client.package_folders[self.folder_media_type]  = folderResult.results[0][:new_id]
-				  else 
+				  else
 					  raise "Unable to create folder for Post due to: #{folderResult.message}"
-				  end 
-				  
-			  end 			
+				  end
+
+			  end
 			  properties[self.folder_property] = client.package_folders[self.folder_media_type]
 		  end
           client.soap_post id, properties
@@ -107,10 +107,10 @@ module FuelSDK
 
       def properties
          if @properties.kind_of? Array
-            @properties           
+            @properties
          else
             [@properties].compact
-         end 
+         end
       end
 
       def id
@@ -140,13 +140,13 @@ module FuelSDK
     include Objects::Soap::CUD
 	attr_accessor :folder_id
 
-    def folder_property 
+    def folder_property
       'CategoryID'
-    end 
-    
+    end
+
     def folder_media_type
       'content'
-    end 
+    end
   end
 
   class DataFolder < Objects::Base
@@ -166,116 +166,126 @@ module FuelSDK
     include Objects::Soap::Read
     include Objects::Soap::CUD
 	attr_accessor :folder_id
-	
-	def folder_property 
+
+	def folder_property
 		'CategoryID'
-	end 
+	end
 
 	def folder_media_type
 		'email'
-	end 
-  
+	end
+
     class SendDefinition < Objects::Base
       include Objects::Soap::Read
       include Objects::Soap::CUD
 	  attr_accessor :folder_id
-	  
+
       def id
         'EmailSendDefinition'
       end
 
-      def folder_property 
+      def folder_property
         'CategoryID'
-      end 
-      
+      end
+
       def folder_media_type
         'userinitiatedsends'
-      end 
-     
+      end
+
 
       def send
         perform_response = client.soap_perform id, 'start' , properties
         if perform_response.status then
           @last_task_id = perform_response.results[0][:result][:task][:id]
-        end 
+        end
         perform_response
       end
 
       def status
         client.soap_get "Send", ['ID','CreatedDate', 'ModifiedDate', 'Client.ID', 'Email.ID', 'SendDate','FromAddress','FromName','Duplicates','InvalidAddresses','ExistingUndeliverables','ExistingUnsubscribes','HardBounces','SoftBounces','OtherBounces','ForwardedEmails','UniqueClicks','UniqueOpens','NumberSent','NumberDelivered','NumberTargeted','NumberErrored','NumberExcluded','Unsubscribes','MissingAddresses','Subject','PreviewURL','SentDate','EmailName','Status','IsMultipart','SendLimit','SendWindowOpen','SendWindowClose','BCCEmail','EmailSendDefinition.ObjectID','EmailSendDefinition.CustomerKey'], {'Property' => 'ID','SimpleOperator' => 'equals','Value' => @last_task_id}
       end
-      
+
       private
       attr_accessor :last_task_id
-      
+
     end
   end
 
 
-	
+
   class Import < Objects::Base
     include Objects::Soap::Read
     include Objects::Soap::CUD
-    
+
 
     def id
           'ImportDefinition'
     end
-  
+
     def post
-      originalProp = properties        
+      originalProp = properties
       cleanProps
       obj = super
       properties = originalProp
       return obj
     end
-    
+
     def patch
-      originalProp = properties        
+      originalProp = properties
       cleanProps
       obj = super
       properties = originalProp
       return obj
-    end    
-    
+    end
+
     def start
       perform_response = client.soap_perform id, 'start' , properties
       if perform_response.status then
         @last_task_id = perform_response.results[0][:result][:task][:id]
-      end 
+      end
       perform_response
     end
-    
+
     def status
       client.soap_get "ImportResultsSummary", ['ImportDefinitionCustomerKey','TaskResultID','ImportStatus','StartDate','EndDate','DestinationID','NumberSuccessful','NumberDuplicated','NumberErrors','TotalRows','ImportType'], {'Property' => 'TaskResultID','SimpleOperator' => 'equals','Value' => @last_task_id}
     end
-    
+
     private
     attr_accessor :last_task_id
-    
+
     def cleanProps
         # If the ID property is specified for the destination then it must be a list import
         if properties.first.has_key?('DestinationObject') then
             if properties.first['DestinationObject'].has_key?('ID') then
-                properties.first[:attributes!] = { 'DestinationObject' => { 'xsi:type' => 'tns:List'}} 
-            end 
-        end 
+                properties.first[:attributes!] = { 'DestinationObject' => { 'xsi:type' => 'tns:List'}}
+            end
+        end
     end
   end
-  
-  
+
+  class Query < Objects::Base
+    include Objects::Soap::Read
+    include Objects::Soap::CUD
+
+
+    def id
+      'QueryDefinition'
+    end
+  end
+
+
   class List < Objects::Base
     include Objects::Soap::Read
     include Objects::Soap::CUD
 	attr_accessor :folder_id
-	
-	def folder_property 
+
+	def folder_property
 		'Category'
-	end 
-	
+	end
+
 	def folder_media_type
 		'list'
-	end 
+	end
 
     class Subscriber < Objects::Base
       include Objects::Soap::Read
@@ -304,7 +314,7 @@ module FuelSDK
 	attr_accessor :get_since_last_batch
     include Objects::Soap::Read
   end
-  
+
   class ProfileAttribute < Objects::Base
     def get
       client.soap_describe "Subscriber"
@@ -331,13 +341,13 @@ module FuelSDK
       'TriggeredSendDefinition'
     end
 
-    def folder_property 
+    def folder_property
       'CategoryID'
-    end 
-    
+    end
+
     def folder_media_type
       'triggered_send'
-    end 
+    end
 
     def send
       if self.properties.is_a? Array then
@@ -346,7 +356,7 @@ module FuelSDK
           tscall.push({"TriggeredSendDefinition" => {"CustomerKey" => p["CustomerKey"]}, "Subscribers" => p["Subscribers"]})
         }
       else
-        tscall = {"TriggeredSendDefinition" => self.properties, "Subscribers" => @subscribers}	
+        tscall = {"TriggeredSendDefinition" => self.properties, "Subscribers" => @subscribers}
       end
       client.soap_post 'TriggeredSend', tscall
     end
@@ -356,15 +366,15 @@ module FuelSDK
     include Objects::Soap::Read
     include Objects::Soap::CUD
     attr_accessor :fields, :folder_id
-	
-	def folder_property 
+
+	def folder_property
 	  'CategoryID'
-	end 
+	end
 
 	def folder_media_type
 	  'dataextension'
-	end 
-	
+	end
+
     alias columns= fields= # backward compatibility
 
     def post
@@ -458,7 +468,7 @@ module FuelSDK
 				  o['Keys'] = {'Key' => formatted }
 				end
 			  end
-			else 
+			else
 				formatted = []
 				d.each do |k, v|
 					next if k == 'CustomerKey'
@@ -490,7 +500,7 @@ module FuelSDK
 				  o['Properties'] = {'Property' => formatted }
 				end
 			  end
-			else 
+			else
 				formatted = []
 				d.each do |k, v|
 					formatted.concat FuelSDK.format_name_value_pairs k => v
@@ -498,7 +508,7 @@ module FuelSDK
 				end
 				d['CustomerKey'] = customer_key
 				d['Properties'] = {'Property' => formatted }
-			end 
+			end
         end
 
         def explicit_properties h
@@ -542,18 +552,18 @@ module FuelSDK
 			  # be a single DataExtension Defined in a Hash
 			  raise 'Unable to handle muliple DataExtension definitions and a field definition'
 		  end
-		  
+
 		  d.each do |de|
-			  
+
 			  if (explicit_fields(de) and (de['columns'] || de['fields'] || has_fields)) or
 				  (de['columns'] and (de['fields'] || has_fields)) or
 				  (de['fields'] and has_fields)
 				  raise 'Fields are defined in too many ways. Please only define once.' # ahhh what, to do...
 			  end
-			  
+
 			  # let users who chose, to define fields explicitly within the hash definition
 			  next if explicit_fields de
-			  
+
 			  de['Fields'] = {'Field' => de['columns'] || de['fields'] || fields}
 			  # sanitize
 			  de.delete 'columns'
@@ -600,7 +610,7 @@ module FuelSDK
       end
     end
   end
-  
+
   # Direct Verb Access Section
 
   class Get < Objects::Base
@@ -626,21 +636,21 @@ module FuelSDK
       end
     end
   end
-  
+
   class Post < Objects::Base
     include Objects::Soap::CUD
     attr_accessor :id
-  
+
     def initialize client, id, properties
       self.properties = properties
       self.client = client
       self.id = id
     end
-  
+
     def post
       super
     end
-  
+
     class << self
       def new client, id, properties=nil
         o = self.allocate
@@ -648,22 +658,22 @@ module FuelSDK
         return o.post
       end
     end
-  end  
-  
+  end
+
   class Delete < Objects::Base
     include Objects::Soap::CUD
     attr_accessor :id
-  
+
     def initialize client, id, properties
       self.properties = properties
       self.client = client
       self.id = id
     end
-  
+
     def delete
       super
     end
-  
+
     class << self
       def new client, id, properties=nil
         o = self.allocate
@@ -671,22 +681,22 @@ module FuelSDK
         return o.delete
       end
     end
-  end    
+  end
 
   class Patch < Objects::Base
       include Objects::Soap::CUD
       attr_accessor :id
-    
+
       def initialize client, id, properties
         self.properties = properties
         self.client = client
         self.id = id
       end
-    
+
       def patch
         super
       end
-    
+
       class << self
         def new client, id, properties=nil
           o = self.allocate
@@ -694,6 +704,6 @@ module FuelSDK
           return o.patch
         end
       end
-  end      
-  
+  end
+
 end
