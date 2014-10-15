@@ -233,6 +233,8 @@ module FuelSDK
         begin
           message_tag = if action == :retrieve
                           :'RetrieveRequestMsg'
+                        elsif action == :perform
+                          :'PerformRequestMsg'  
                         else
                           :"#{action.to_s.capitalize}Request"
                         end
