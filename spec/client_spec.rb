@@ -169,6 +169,14 @@ describe FuelSDK::Client do
         client.id = 1234
         expect { client.refresh }.to raise_exception 'Require Client Id and Client Secret to refresh tokens'
       end
+
+      it 'when refresh token is not good' do
+        client.id = ENV['ET_CLIENT_ID']
+        client.secret = ENV['ET_CLIENT_SECRET']
+        client.refresh_token = 24534
+        expect { client.refresh }.to raise_exception 'Unable to refresh token: Unauthorized'
+        expect { client.refresh }.to_not raise_exception
+      end
     end
 
     #context 'posts' do
