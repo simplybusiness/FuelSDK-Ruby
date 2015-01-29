@@ -73,36 +73,47 @@ module FuelSDK
       self.wsdl = params["defaultwsdl"] if params["defaultwsdl"]
     end
 
-    def refresh force=false
-      raise 'Require Client Id and Client Secret to refresh tokens' unless (id && secret)
-      #If we don't already have a token or the token expires within 5 min(300 seconds)
-      if (self.access_token.nil? || Time.new + 300 > self.auth_token_expiration || force)
-        payload = Hash.new.tap do |h|
-          h['clientId']= id
-          h['clientSecret'] = secret
-          h['refreshToken'] = refresh_token if refresh_token
-          h['accessType'] = 'offline'
-        end
 
-        options = Hash.new.tap do |h|
-          h['data'] = payload
-          h['content_type'] = 'application/json'
-          h['params'] = { 'legacy' => 1 }
-        end
-        response = post("https://auth.exacttargetapis.com/v1/requestToken", options)
-        unless response.has_key?('accessToken')
-          reset_auth_data
-          raise "Unable to refresh token: #{response['message']}"
-        end
+    MAX_REFRESH_RETRIES = 2
 
-        self.access_token = response['accessToken']
-        self.internal_token = response['legacyToken']
-        self.auth_token_expiration = Time.new + response['expiresIn']
-        self.refresh_token = response['refreshToken'] if response.has_key?("refreshToken")
-        return true
-      else
-        return false
+    def refresh(force=false)
+      def try_refresh(force=false, retries=1)
+        raise 'Require Client Id and Client Secret to refresh tokens' unless (id && secret)
+        #If we don't already have a token or the token expires within 5 min(300 seconds)
+        if (self.access_token.nil? || Time.new + 300 > self.auth_token_expiration || force)
+          payload = Hash.new.tap do |h|
+            h['clientId']= id
+            h['clientSecret'] = secret
+            h['refreshToken'] = refresh_token if refresh_token
+            h['accessType'] = 'offline'
+          end
+
+          options = Hash.new.tap do |h|
+            h['data'] = payload
+            h['content_type'] = 'application/json'
+            h['params'] = { 'legacy' => 1 }
+          end
+          response = post("https://auth.exacttargetapis.com/v1/requestToken", options)
+          if response.has_key?('accessToken')
+            self.access_token = response['accessToken']
+            self.internal_token = response['legacyToken']
+            self.auth_token_expiration = Time.new + response['expiresIn']
+            self.refresh_token = response['refreshToken'] if response.has_key?("refreshToken")
+            return true
+          else
+            reset_auth_data
+            if (retries < MAX_REFRESH_RETRIES)
+              try_refresh(force, retries + 1)
+            else
+              raise "Unable to refresh token: #{response['message']}"
+            end
+          end
+        else
+          return false
+        end
       end
+
+      try_refresh(force)
     end
 
     def refresh!

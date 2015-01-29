@@ -170,11 +170,20 @@ describe FuelSDK::Client do
         expect { client.refresh }.to raise_exception 'Require Client Id and Client Secret to refresh tokens'
       end
 
-      it 'when refresh token is not good' do
+      it 'when refresh token is not good and don"t retry' do
         client.id = ENV['ET_CLIENT_ID']
         client.secret = ENV['ET_CLIENT_SECRET']
         client.refresh_token = 24534
+        stub_const("FuelSDK::Client::MAX_REFRESH_RETRIES", 1)
         expect { client.refresh }.to raise_exception 'Unable to refresh token: Unauthorized'
+        expect { client.refresh }.to_not raise_exception
+      end
+
+      it 'when refresh token is not good and retry' do
+        client.id = ENV['ET_CLIENT_ID']
+        client.secret = ENV['ET_CLIENT_SECRET']
+        client.refresh_token = 24534
+        stub_const("FuelSDK::Client::MAX_REFRESH_RETRIES", 2)
         expect { client.refresh }.to_not raise_exception
       end
     end
