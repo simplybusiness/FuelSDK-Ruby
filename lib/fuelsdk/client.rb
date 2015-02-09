@@ -123,7 +123,6 @@ module FuelSDK
     def reset_auth_data
       self.refresh_token = nil
       self.access_token = nil
-      self.access_token = nil
       self.internal_token = nil
       self.auth_token_expiration = nil
     end
