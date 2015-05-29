@@ -240,22 +240,19 @@ module FuelSDK
 		def soap_cud action, object_type, properties, upsert=nil
 			# get a list of attributes so we can seperate
 			# them from standard object properties
-			#type_attrs = soap_describe(object_type).editable
-
-			#
-			#   properties = [properties] unless properties.kind_of? Array
-			#   properties.each do |p|
-			#     formated_attrs = []
-			#     p.each do |k, v|
-			#       if type_attrs.include? k
-			#         p.delete k
-			#         attrs = FuelSDK.format_name_value_pairs k => v
-			#         formated_attrs.concat attrs
-			#       end
-			#     end
-			#     (p['Attributes'] ||= []).concat formated_attrs unless formated_attrs.empty?
-			#   end
-			#
+			type_attrs = soap_describe(object_type).editable
+		  properties = [properties] unless properties.kind_of? Array
+		  properties.each do |p|
+		    formated_attrs = []
+		    p.each do |k, v|
+		      if type_attrs.include? k
+		        p.delete k
+		        attrs = FuelSDK.format_name_value_pairs k => v
+		        formated_attrs.concat attrs
+		      end
+		    end
+		    (p['Attributes'] ||= []).concat formated_attrs unless formated_attrs.empty?
+		  end
 
 			message = {
 				'Objects' => properties,
@@ -286,20 +283,20 @@ module FuelSDK
 			raise if rsp.nil?
 			response.new rsp, self
 		end
-	end
 
-  def add_attributes_inline(obj)
-    if obj.is_a?(Hash) && attrs=obj[:attributes!]
-      attrs.each do |k, v|
-        v.each do |k2, v2|
-          if obj[k].is_a?(Array)
-            obj[k].each{ |o| o["@#{k2}"] = v2 }
-          elsif obj[k].is_a?(Hash)
-            obj[k]["@#{k2}"] = v2
-          end
-        end
-      end
-    end
-    obj.each{ |k, v| add_attributes_inline(v) } if obj.is_a?(Hash)
-  end
+	  def add_attributes_inline(obj)
+	    if obj.is_a?(Hash) && attrs=obj[:attributes!]
+	      attrs.each do |k, v|
+	        v.each do |k2, v2|
+	          if obj[k].is_a?(Array)
+	            obj[k].each{ |o| o["@#{k2}"] = v2 }
+	          elsif obj[k].is_a?(Hash)
+	            obj[k]["@#{k2}"] = v2
+	          end
+	        end
+	      end
+	    end
+	    obj.each{ |k, v| add_attributes_inline(v) } if obj.is_a?(Hash)
+	  end
+	end
 end

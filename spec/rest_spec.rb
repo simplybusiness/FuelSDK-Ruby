@@ -1,5 +1,5 @@
 require 'spec_helper'
-describe FuelSDK::Rest do
+RSpec.describe FuelSDK::Rest do
   let(:client) { FuelSDK::Client.new }
 
   subject { client }

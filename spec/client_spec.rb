@@ -1,6 +1,6 @@
-require 'spec_helper.rb'
+require 'spec_helper'
 
-describe FuelSDK::Client do
+RSpec.describe FuelSDK::Client do
 
   context 'initialized' do
 
@@ -13,12 +13,12 @@ describe FuelSDK::Client do
 
     it 'with debug=true' do
       client = FuelSDK::Client.new({}, true)
-      expect(client.debug).to be_true
+      expect(client.debug).to eql(true)
     end
 
     it 'with debug=false' do
       client = FuelSDK::Client.new({}, false)
-      expect(client.debug).to be_false
+      expect(client.debug).to eql(false)
     end
 
     it 'creates SoapClient' do
@@ -70,9 +70,9 @@ describe FuelSDK::Client do
     end
 
     it 'debug' do
-      expect(client.debug).to be_false
+      expect(client.debug).to eql(false)
       client.debug = true
-      expect(client.debug).to be_true
+      expect(client.debug).to eql(true)
     end
   end
 
@@ -94,9 +94,7 @@ describe FuelSDK::Client do
      }
     }
 
-    let(:sig){
-      sig = 'hanckock'
-    }
+    let(:sig) { 'hanckock' }
 
     let(:encoded) {
       JWT.encode(payload, sig)
@@ -108,9 +106,7 @@ describe FuelSDK::Client do
 
     describe 'decodes JWT' do
 
-      let(:sig){
-        sig = 'hanckock'
-      }
+      let(:sig) { 'hanckock' }
 
       let(:encoded) {
         JWT.encode(payload, sig)
@@ -174,7 +170,7 @@ describe FuelSDK::Client do
     #context 'posts' do
     #  let(:client) { FuelSDK::Client.new 'client' => { 'id' => 123, 'secret' => 'sssh'} }
     #  it 'accessType=offline' do
-    #  client.stub(:post)
+    #  allow(client).to receive(:post)
     #    .with({'clientId' => 123, 'secret' => 'ssh', 'accessType' => 'offline'})
     #    .and_return()
     #end
@@ -183,7 +179,7 @@ describe FuelSDK::Client do
     #  let(:client) { FuelSDK::Client.new 'client' => { 'id' => 123, 'secret' => 'sssh'} }
 
     #  it 'access_token' do
-    #    #client.stub(:post).
+    #    #allow(client).to receive(:post).
     #  end
     #end
   end

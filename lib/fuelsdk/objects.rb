@@ -143,16 +143,23 @@ module FuelSDK
 		end
 
 		class Base
-			attr_accessor :properties, :client
-			attr_reader :id
+			attr_accessor :client
+			attr_reader :id, :properties
 
-			alias props= properties= # backward compatibility
 			alias authStub= client= # backward compatibility
 
 			def properties
-				#@properties = [@properties].compact unless @properties.kind_of? Array
-				@properties
+				@properties || []
 			end
+
+			def properties=(val)
+				if val.kind_of? Array
+					@properties = val
+				else
+					@properties = [val].compact
+				end
+			end
+			alias props= properties= # backward compatibility
 
 			#Backwards compatibility
 			def props
@@ -607,7 +614,7 @@ module FuelSDK
 					# let users who chose, to define fields explicitly within the hash definition
 					next if explicit_fields de
 
-					de['Fields'] = {'Field' => de['columns'] || de['fields'] || fields}
+					de['Fields'] = {'Field' => de.delete('columns') || de.delete('fields') || fields}
 					# sanitize
 
 					raise 'DataExtension needs atleast one field.' unless de['Fields']['Field']
