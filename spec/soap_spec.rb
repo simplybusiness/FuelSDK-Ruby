@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe FuelSDK::Soap do
+RSpec.describe FuelSDK::Soap do
 
   let(:client) { FuelSDK::Client.new }
 
@@ -22,15 +22,20 @@ describe FuelSDK::Soap do
   it { should_not respond_to(:endpoint=) }
 
   it { should respond_to(:soap_client) }
-  
+
   it { should respond_to(:package_name) }
   it { should respond_to(:package_name=) }
-  
+
   it { should respond_to(:package_folders) }
   it { should respond_to(:package_folders=) }
 
-  its(:debug) { should be_false }
-  its(:wsdl) { should eq 'https://webservice.exacttarget.com/etframework.wsdl' }
+  it "has debug set to false" do
+    expect(subject.debug).to eql(false)
+  end
+
+  it "has a wsdl set correctly" do
+    expect(subject.wsdl).to eql('https://webservice.exacttarget.com/etframework.wsdl')
+  end
 
   describe '#header' do
     it 'raises an exception when internal_token is missing' do
@@ -52,7 +57,7 @@ describe FuelSDK::Soap do
 
   describe 'requests' do
     subject {
-      client.stub(:soap_request) do |action, message|
+      allow(client).to receive(:soap_request) do |action, message|
         [action, message]
       end
       client
@@ -65,11 +70,11 @@ describe FuelSDK::Soap do
 
     describe '#soap_post' do
       subject {
-        client.stub(:soap_request) do |action, message|
+        allow(client).to receive(:soap_request) do |action, message|
           [action, message]
         end
 
-        client.stub_chain(:soap_describe,:editable)
+        allow(client).to receive_message_chain(:soap_describe, :editable)
           .and_return(['First Name', 'Last Name', 'Gender'])
         client
       }

@@ -1,13 +1,13 @@
 require 'spec_helper'
 
-describe FuelSDK::Targeting do
+RSpec.describe FuelSDK::Targeting do
 
   subject { Class.new.new.extend(FuelSDK::Targeting) }
 
   it { should respond_to(:endpoint) }
   it { should_not respond_to(:endpoint=) }
   it 'should respond to determine_stack' do
-    expect(subject.respond_to?(:determine_stack, true)).to be_true
+    expect(subject.respond_to?(:determine_stack, true)).to eql(true)
   end
   it { should respond_to(:get) }
   it { should respond_to(:post) }
@@ -17,8 +17,8 @@ describe FuelSDK::Targeting do
 
   describe '#determine_stack' do
     let(:client) { c = Class.new.new.extend(FuelSDK::Targeting)
-      c.stub(:access_token).and_return('open_sesame')
-      c.stub(:get)
+      allow(c).to receive(:access_token).and_return('open_sesame')
+      allow(c).to receive(:get)
         .with('https://www.exacttargetapis.com/platform/v1/endpoints/soap',{'params'=>{'access_token'=>'open_sesame'}})
         .and_return({'url' => 'S#.authentication.target'})
       c
@@ -30,7 +30,7 @@ describe FuelSDK::Targeting do
 
   describe '#endpoint' do
     let(:client) { c = Class.new.new.extend(FuelSDK::Targeting)
-      c.stub(:get).and_return({'url' => 'S#.authentication.target'})
+      allow(c).to receive(:get).and_return({'url' => 'S#.authentication.target'})
       c
     }
 

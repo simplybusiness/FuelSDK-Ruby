@@ -6,10 +6,10 @@ require 'fuelsdk/version'
 Gem::Specification.new do |spec|
   spec.name          = "fuelsdk"
   spec.version       = FuelSDK::VERSION
-  spec.authors       = ["MichaelAllenClark", "barberj"]
-  spec.email         = []
-  spec.description   = %q{Fuel SDK for Ruby}
-  spec.summary       = %q{Fuel SDK for Ruby}
+  spec.authors       = ["MichaelAllenClark", "barberj", "kellyjandrews"]
+  spec.email         = ["code@exacttarget.com"]
+  spec.description   = %q{API wrapper for SOAP and REST API with Salesforce Marketing Cloud (ExactTarget)}
+  spec.summary       = %q{Fuel Client Library for Ruby}
   spec.homepage      = "https://github.com/ExactTarget/FuelSDK-Ruby"
   spec.license       = ""
 

@@ -1,7 +1,6 @@
-require 'spec_helper.rb'
-require 'objects_helper_spec.rb'
+require 'spec_helper'
 
-describe FuelSDK::Objects::Base do
+RSpec.describe FuelSDK::Objects::Base do
 
   let(:object) { FuelSDK::Objects::Base.new }
   subject{ object }
@@ -24,131 +23,145 @@ describe FuelSDK::Objects::Base do
 
 end
 
-describe FuelSDK::BounceEvent do
-
+RSpec.describe FuelSDK::BounceEvent do
   let(:object) { FuelSDK::BounceEvent.new }
   subject{ object }
 
   it_behaves_like 'Soap Read Only Object'
-  its(:id){ should eq 'BounceEvent' }
+  it "has an id of 'BounceEvent'" do
+    expect(subject.id).to eql('BounceEvent')
+  end
 end
 
-describe FuelSDK::ClickEvent do
-
+RSpec.describe FuelSDK::ClickEvent do
   let(:object) { FuelSDK::ClickEvent.new }
   subject{ object }
 
   it_behaves_like 'Soap Read Only Object'
-  its(:id){ should eq 'ClickEvent' }
+  it "has an id of 'ClickEvent'" do
+    expect(subject.id).to eql('ClickEvent')
+  end
 end
 
-describe FuelSDK::ContentArea do
-
+RSpec.describe FuelSDK::ContentArea do
   let(:object) { FuelSDK::ContentArea.new }
   subject{ object }
 
   it_behaves_like 'Soap Object'
-  its(:id){ should eq 'ContentArea' }
+  it "has an id of 'ContentArea'" do
+    expect(subject.id).to eql('ContentArea')
+  end
 end
 
-describe FuelSDK::DataFolder do
-
+RSpec.describe FuelSDK::DataFolder do
   let(:object) { FuelSDK::DataFolder.new }
   subject{ object }
 
   it_behaves_like 'Soap Object'
-  its(:id){ should eq 'DataFolder' }
+  it "has an id of 'DataFolder'" do
+    expect(subject.id).to eql('DataFolder')
+  end
 end
 
-describe FuelSDK::Folder do
-
+RSpec.describe FuelSDK::Folder do
   let(:object) { FuelSDK::Folder.new }
   subject{ object }
 
   it_behaves_like 'Soap Object'
-  its(:id){ should eq 'DataFolder' }
+  it "has an id of 'DataFolder'" do
+    expect(subject.id).to eql('DataFolder')
+  end
 end
 
-describe FuelSDK::Email do
-
+RSpec.describe FuelSDK::Email do
   let(:object) { FuelSDK::Email.new }
   subject{ object }
 
   it_behaves_like 'Soap Object'
-  its(:id){ should eq 'Email' }
+  it "has an id of 'Email'" do
+    expect(subject.id).to eql('Email')
+  end
 end
 
-describe FuelSDK::List do
-
+RSpec.describe FuelSDK::List do
   let(:object) { FuelSDK::List.new }
   subject{ object }
 
   it_behaves_like 'Soap Object'
-  its(:id){ should eq 'List' }
+  it "has an id of 'List'" do
+    expect(subject.id).to eql('List')
+  end
 end
 
-describe FuelSDK::List::Subscriber do
-
+RSpec.describe FuelSDK::List::Subscriber do
   let(:object) { FuelSDK::List::Subscriber.new }
   subject{ object }
 
   it_behaves_like 'Soap Read Only Object'
-  its(:id){ should eq 'ListSubscriber' }
+  it "has an id of 'ListSubscriber'" do
+    expect(subject.id).to eql('ListSubscriber')
+  end
 end
 
-describe FuelSDK::OpenEvent do
-
+RSpec.describe FuelSDK::OpenEvent do
   let(:object) { FuelSDK::OpenEvent.new }
   subject{ object }
 
   it_behaves_like 'Soap Read Only Object'
-  its(:id){ should eq 'OpenEvent' }
+  it "has an id of 'OpenEvent'" do
+    expect(subject.id).to eql('OpenEvent')
+  end
 end
 
-describe FuelSDK::SentEvent do
-
+RSpec.describe FuelSDK::SentEvent do
   let(:object) { FuelSDK::SentEvent.new }
   subject{ object }
 
   it_behaves_like 'Soap Read Only Object'
-  its(:id){ should eq 'SentEvent' }
+  it "has an id of 'SentEvent'" do
+    expect(subject.id).to eql('SentEvent')
+  end
 end
 
-describe FuelSDK::Subscriber do
-
+RSpec.describe FuelSDK::Subscriber do
   let(:object) { FuelSDK::Subscriber.new }
   subject{ object }
 
   it_behaves_like 'Soap Object'
-  its(:id){ should eq 'Subscriber' }
+  it "has an id of 'Subscriber'" do
+    expect(subject.id).to eql('Subscriber')
+  end
 end
 
-describe FuelSDK::DataExtension::Column do
-
+RSpec.describe FuelSDK::DataExtension::Column do
   let(:object) { FuelSDK::DataExtension::Column.new }
   subject{ object }
 
   it_behaves_like 'Soap Read Only Object'
-  its(:id){ should eq 'DataExtensionField' }
+  it "has an id of 'DataExtensionField'" do
+    expect(subject.id).to eql('DataExtensionField')
+  end
 end
 
-describe FuelSDK::DataExtension do
+RSpec.describe FuelSDK::DataExtension do
   let(:object) { FuelSDK::DataExtension.new }
   subject{ object }
 
   it_behaves_like 'Soap Object'
-  its(:id){ should eq 'DataExtension' }
+  it "has an id of 'DataExtension'" do
+    expect(subject.id).to eql('DataExtension')
+  end
   it { should respond_to :columns= }
   it { should respond_to :fields }
   it { should respond_to :fields= }
 
   describe '#post' do
     subject {
-		object.stub_chain(:client,:soap_post) do |id, properties|
-			[id, properties]
-		end
-		object.stub_chain(:client,:package_name).and_return(nil)
-		object.stub_chain(:client,:package_folders).and_return(nil)
+  		allow(object).to receive_message_chain(:client,:soap_post) do |id, properties|
+  			[id, properties]
+  		end
+  		allow(object).to receive_message_chain(:client,:package_name).and_return(nil)
+  		allow(object).to receive_message_chain(:client,:package_folders).and_return(nil)
 
       object
     }
@@ -307,7 +320,7 @@ describe FuelSDK::DataExtension do
 
   describe '#patch' do
     subject {
-      object.stub_chain(:client, :soap_patch) do |id, properties|
+      allow(object).to receive_message_chain(:client, :soap_patch) do |id, properties|
         [id, properties]
       end
 
@@ -331,12 +344,14 @@ describe FuelSDK::DataExtension do
   end
 end
 
-describe FuelSDK::DataExtension::Row do
+RSpec.describe FuelSDK::DataExtension::Row do
   let(:object) { FuelSDK::DataExtension::Row.new }
   subject{ object }
 
   it_behaves_like 'Soap Object'
-  its(:id){ should eq 'DataExtensionObject' }
+  it "has an id of 'DataExtensionObject'" do
+    expect(subject.id).to eql('DataExtensionObject')
+  end
   it { should respond_to :name }
   it { should respond_to :name= }
   it { should respond_to :customer_key }
@@ -375,11 +390,11 @@ describe FuelSDK::DataExtension::Row do
     end
 
     it 'updates missing' do
-      rsp = mock(FuelSDK::SoapResponse)
-      rsp.stub(:results).and_return([{:name => 'Products', :customer_key => 'ProductsKey'}])
-      rsp.stub(:success?).and_return true
+      rsp = instance_double(FuelSDK::SoapResponse)
+      allow(rsp).to receive(:results).and_return([{:name => 'Products', :customer_key => 'ProductsKey'}])
+      allow(rsp).to receive(:success?).and_return true
 
-      subject.stub_chain(:client,:soap_get).and_return(rsp)
+      allow(subject).to receive_message_chain(:client,:soap_get).and_return(rsp)
       subject.name = 'Not Nil'
 
       # this really wouldn't work this way. name shouldn't be updated since its whats being used for filter,
@@ -392,7 +407,7 @@ describe FuelSDK::DataExtension::Row do
 
   describe '#get' do
     subject {
-      object.stub_chain(:client, :soap_get) do |id, properties, filter|
+      allow(object).to receive_message_chain(:client, :soap_get) do |id, properties, filter|
         [id, properties, filter]
       end
 
@@ -407,7 +422,7 @@ describe FuelSDK::DataExtension::Row do
 
   describe '#post' do
     subject {
-      object.stub_chain(:client, :soap_post) do |id, properties|
+      allow(object).to receive_message_chain(:client, :soap_post) do |id, properties|
         [id, properties]
       end
 
@@ -444,11 +459,11 @@ describe FuelSDK::DataExtension::Row do
     it 'uses name to get customer key for inseration' do
       subject.name = 'Subscribers'
 
-      rsp = mock(FuelSDK::SoapResponse)
-      rsp.stub(:results).and_return([{:name => 'Products', :customer_key => 'ProductsKey'}])
-      rsp.stub(:success?).and_return true
+      rsp = instance_double(FuelSDK::SoapResponse)
+      allow(rsp).to receive(:results).and_return([{:name => 'Products', :customer_key => 'ProductsKey'}])
+      allow(rsp).to receive(:success?).and_return true
 
-      subject.stub_chain(:client, :soap_get).and_return(rsp)
+      allow(subject).to receive_message_chain(:client, :soap_get).and_return(rsp)
       subject.properties = [{'Properties' => {
         'Property' => [{'Name' => 'Name', 'Value' => 'Justin'}]}}]
 
@@ -474,11 +489,13 @@ describe FuelSDK::DataExtension::Row do
 end
 
 # verify backward compats
-describe ET_Subscriber do
+RSpec.describe ET_Subscriber do
 
   let(:object) { ET_Subscriber.new }
   subject{ object }
 
   it_behaves_like 'Soap Object'
-  its(:id){ should eq 'Subscriber' }
+  it "has an id of 'Subscriber'" do
+    expect(subject.id).to eql('Subscriber')
+  end
 end
