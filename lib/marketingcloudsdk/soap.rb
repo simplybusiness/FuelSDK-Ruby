@@ -287,10 +287,27 @@ module MarketingCloudSDK
 		end
 
 		def soap_request action, message
+			add_attributes_inline(message)
+
 			response = action.eql?(:describe) ? DescribeResponse : SoapResponse
 
 			rsp = soap_client.call(action, :message => message)
 			response.new rsp, self
+		end
+
+		def add_attributes_inline(obj)
+			if obj.is_a?(Hash) && attrs=obj[:attributes!]
+				attrs.each do |k, v|
+					v.each do |k2, v2|
+						if obj[k].is_a?(Array)
+							obj[k].each{ |o| o["@#{k2}"] = v2 }
+						elsif obj[k].is_a?(Hash)
+							obj[k]["@#{k2}"] = v2
+						end
+					end
+				end
+			end
+			obj.each{ |k, v| add_attributes_inline(v) } if obj.is_a?(Hash)
 		end
 	end
 end

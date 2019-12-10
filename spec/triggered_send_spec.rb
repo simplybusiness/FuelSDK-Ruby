@@ -1,8 +1,8 @@
 require 'spec_helper.rb'
 
-describe FuelSDK::TriggeredSend do
+describe MarketingCloudSDK::TriggeredSend do
 
-  let(:client) { double('FuelSDK::Client') }
+  let(:client) { double('MarketingCloudSDK::Client') }
   let(:triggered_send) { described_class.new }
 
   before do
@@ -15,11 +15,11 @@ describe FuelSDK::TriggeredSend do
       triggered_send.send
     end
 
-    it 'returns a FuelSDK::TriggeredSendResponse' do
-      mock_response = double('FuelSDK::Response')
+    it 'returns a MarketingCloudSDK::TriggeredSendResponse' do
+      mock_response = double('MarketingCloudSDK::Response')
       allow(client).to receive(:soap_post).with('TriggeredSend', []).and_return mock_response
       response = triggered_send.send
-      expect(response).to be_instance_of(FuelSDK::TriggeredSendResponse)
+      expect(response).to be_instance_of(MarketingCloudSDK::TriggeredSendResponse)
       expect(response.__getobj__).to eq mock_response
     end
   end

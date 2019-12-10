@@ -1,6 +1,6 @@
 require 'spec_helper.rb'
 
-describe FuelSDK::TriggeredSendResponse do
+describe MarketingCloudSDK::TriggeredSendResponse do
 
   def build_raw(message)
     data = { :envelope => { :body => { :create_response => { :results => { :status_message => message } } } } }
@@ -12,7 +12,7 @@ describe FuelSDK::TriggeredSendResponse do
     double('raw', hash: data)
   end
 
-  let(:inner_response) { double('FuelSDK::Response') }
+  let(:inner_response) { double('MarketingCloudSDK::Response') }
   let(:triggered_send_response) { described_class.new(inner_response) }
 
   context '#success' do
@@ -59,7 +59,7 @@ describe FuelSDK::TriggeredSendResponse do
   end
 
   context 'is a delegator' do
-    it 'delegates to the FuelSDK::Response' do
+    it 'delegates to the MarketingCloudSDK::Response' do
       expect(triggered_send_response.__getobj__).to eq inner_response
     end
   end
