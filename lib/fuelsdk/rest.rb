@@ -69,7 +69,7 @@ module FuelSDK
         begin
           #Try to refresh the token and if we do then we need to regenerate the header as well.
           self.refresh
-          (options['params'] ||= {}).merge! 'access_token' => access_token
+          options.merge! 'access_token' => access_token
           rsp = rest_client.send(action, url, options)
           raise 'Unauthorized' if rsp.message == 'Unauthorized'
         rescue

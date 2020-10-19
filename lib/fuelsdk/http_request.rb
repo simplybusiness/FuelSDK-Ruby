@@ -72,6 +72,12 @@ module FuelSDK
         _request = method.new uri.request_uri
         _request.body = data.to_json if data
         _request.content_type = options['content_type'] if options['content_type']
+
+        # Add Authorization header if we have an access token
+        if options['access_token']
+          _request.add_field('Authorization', 'Bearer ' + options['access_token'])
+        end
+
         response = http.request(_request)
 
         HTTPResponse.new(response, self, :url => url, :options => options)
