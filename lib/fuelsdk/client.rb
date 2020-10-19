@@ -5,7 +5,7 @@ module FuelSDK
 		# You will see in the code some of these
 		# items are being updated via back doors and such.
 		attr_reader :code, :message, :results, :request_id, :body, :raw
-		
+
 		# some defaults
 		def success
 			@success ||= false
@@ -96,7 +96,7 @@ module FuelSDK
 			self.auth_token_expiration = Time.new + response['expiresIn']
 			self.refresh_token = response['refreshToken'] if response.has_key?("refreshToken")
 			return true
-			else 
+			else
 			return false
 			end
 		end
@@ -110,7 +110,7 @@ module FuelSDK
 			s.client = self
 			lists = ids.collect{|id| {'ID' => id}}
 			s.properties = {"EmailAddress" => email, "Lists" => lists}
-			p s.properties 
+			p s.properties
 			s.properties['SubscriberKey'] = subscriber_key if subscriber_key
 
 			# Try to add the subscriber
@@ -130,55 +130,55 @@ module FuelSDK
 		def SendTriggeredSends(arrayOfTriggeredRecords)
 			sendTS = ET_TriggeredSend.new
 			sendTS.authStub = self
-			
+
 			sendTS.properties = arrayOfTriggeredRecords
 			sendResponse = sendTS.send
-			
+
 			return sendResponse
 		end
 		def SendEmailToList(emailID, listID, sendClassficationCustomerKey)
-			email = ET_Email::SendDefinition.new 
-			email.properties = {"Name"=>SecureRandom.uuid, "CustomerKey"=>SecureRandom.uuid, "Description"=>"Created with RubySDK"} 
+			email = ET_Email::SendDefinition.new
+			email.properties = {"Name"=>SecureRandom.uuid, "CustomerKey"=>SecureRandom.uuid, "Description"=>"Created with RubySDK"}
 			email.properties["SendClassification"] = {"CustomerKey"=>sendClassficationCustomerKey}
 			email.properties["SendDefinitionList"] = {"List"=> {"ID"=>listID}, "DataSourceTypeID"=>"List"}
 			email.properties["Email"] = {"ID"=>emailID}
 			email.authStub = self
 			result = email.post
-			if result.status then 
-				sendresult = email.send 
-				if sendresult.status then 
+			if result.status then
+				sendresult = email.send
+				if sendresult.status then
 					deleteresult = email.delete
 					return sendresult
-				else 
+				else
 					raise "Unable to send using send definition due to: #{result.results[0][:status_message]}"
-				end 
+				end
 			else
 				raise "Unable to create send definition due to: #{result.results[0][:status_message]}"
-			end 
-		end 
-			
+			end
+		end
+
 		def SendEmailToDataExtension(emailID, sendableDataExtensionCustomerKey, sendClassficationCustomerKey)
-			email = ET_Email::SendDefinition.new 
-			email.properties = {"Name"=>SecureRandom.uuid, "CustomerKey"=>SecureRandom.uuid, "Description"=>"Created with RubySDK"} 
+			email = ET_Email::SendDefinition.new
+			email.properties = {"Name"=>SecureRandom.uuid, "CustomerKey"=>SecureRandom.uuid, "Description"=>"Created with RubySDK"}
 			email.properties["SendClassification"] = {"CustomerKey"=> sendClassficationCustomerKey}
 			email.properties["SendDefinitionList"] = {"CustomerKey"=> sendableDataExtensionCustomerKey, "DataSourceTypeID"=>"CustomObject"}
 			email.properties["Email"] = {"ID"=>emailID}
 			email.authStub = self
 			result = email.post
-			if result.status then 
-				sendresult = email.send 
-				if sendresult.status then 
+			if result.status then
+				sendresult = email.send
+				if sendresult.status then
 					deleteresult = email.delete
 					return sendresult
-				else 
+				else
 					raise "Unable to send using send definition due to: #{result.results[0][:status_message]}"
-				end 
+				end
 			else
 				raise "Unable to create send definition due to: #{result.results[0][:status_message]}"
-			end 
+			end
 		end
 		def CreateAndStartListImport(listId,fileName)
-			import = ET_Import.new 
+			import = ET_Import.new
 			import.authStub = self
 			import.properties = {"Name"=> "SDK Generated Import #{DateTime.now.to_s}"}
 			import.properties["CustomerKey"] = SecureRandom.uuid
@@ -191,16 +191,16 @@ module FuelSDK
 			import.properties["RetrieveFileTransferLocation"] = {"CustomerKey"=>"ExactTarget Enhanced FTP"}
 			import.properties["UpdateType"] = "AddAndUpdate"
 			result = import.post
-			
-			if result.status then 
-				return import.start 
+
+			if result.status then
+				return import.start
 			else
 				raise "Unable to create import definition due to: #{result.results[0][:status_message]}"
-			end 
-		end 
-			
+			end
+		end
+
 		def CreateAndStartDataExtensionImport(dataExtensionCustomerKey, fileName, overwrite)
-			import = ET_Import.new 
+			import = ET_Import.new
 			import.authStub = self
 			import.properties = {"Name"=> "SDK Generated Import #{DateTime.now.to_s}"}
 			import.properties["CustomerKey"] = SecureRandom.uuid
@@ -213,30 +213,30 @@ module FuelSDK
 			import.properties["RetrieveFileTransferLocation"] = {"CustomerKey"=>"ExactTarget Enhanced FTP"}
 			if overwrite then
 				import.properties["UpdateType"] = "Overwrite"
-			else 
+			else
 				import.properties["UpdateType"] = "AddAndUpdate"
-			end 
+			end
 			result = import.post
-			
-			if result.status then 
-				return import.start 
+
+			if result.status then
+				return import.start
 			else
 				raise "Unable to create import definition due to: #{result.results[0][:status_message]}"
-			end 
-		end 
-			
+			end
+		end
+
 		def CreateProfileAttributes(allAttributes)
-			attrs = ET_ProfileAttribute.new 
+			attrs = ET_ProfileAttribute.new
 			attrs.authStub = self
 			attrs.properties = allAttributes
 			return attrs.post
 		end
-		
+
 		def CreateContentAreas(arrayOfContentAreas)
 			postC = ET_ContentArea.new
 			postC.authStub = self
 			postC.properties = arrayOfContentAreas
-			sendResponse = postC.post			
+			sendResponse = postC.post
 			return sendResponse
 		end
 	end
