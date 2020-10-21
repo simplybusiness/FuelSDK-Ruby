@@ -47,8 +47,7 @@ module FuelSDK
 
 		def jwt= encoded_jwt
 			raise 'Require app signature to decode JWT' unless self.signature
-			decoded_jwt = JWT.decode(encoded_jwt, self.signature, true)
-			decoded_jwt = decoded_jwt[0] if decoded_jwt.is_a?(Array)
+			decoded_jwt = Array.new.push(JWT.decode(encoded_jwt, self.signature, true)).flatten.first
 
 			self.auth_token = decoded_jwt['request']['user']['oauthToken']
 			self.internal_token = decoded_jwt['request']['user']['internalOauthToken']
