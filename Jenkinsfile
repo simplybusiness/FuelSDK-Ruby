@@ -1,4 +1,5 @@
-PROJECT = 'marketingcloudsdk'
+PROJECT = 'sfmc-fuelsdk-ruby'
+GEMNAME = 'marketingcloudsdk'
 
 pipeline {
   agent any
@@ -18,7 +19,7 @@ pipeline {
 
   environment {
     GEM_VERSION = sh(
-      script: "_pipeline/utils/gem_version.sh ${PROJECT}.gemspec",
+      script: "_pipeline/utils/gem_version.sh ${GEMNAME}.gemspec",
       returnStdout: true
     ).trim()
   }
