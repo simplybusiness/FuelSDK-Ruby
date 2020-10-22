@@ -38,7 +38,7 @@ begin
 	#  The following request could potentially bring back large amounts of data if run against a production account
 =begin
 	p '>>> Retrieve All BounceEvents with GetMoreResults'
-	getBounceEvent = FuelSDK::BounceEvent.new()
+	getBounceEvent = MarketingCloudSDK::BounceEvent.new()
 	getBounceEvent.authStub = stubObj
 	getBounceEvent.props = ["SendID","SubscriberKey","EventDate","Client.ID","EventType","BatchID","TriggeredSendDefinitionObjectID","PartnerKey"]
 	getResponse = getBounceEvent.get
