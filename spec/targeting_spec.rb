@@ -19,7 +19,7 @@ describe FuelSDK::Targeting do
     let(:client) { c = Class.new.new.extend(FuelSDK::Targeting)
       c.stub(:access_token).and_return('open_sesame')
       c.stub(:get)
-        .with('https://www.exacttargetapis.com/platform/v1/endpoints/soap',{'params'=>{'access_token'=>'open_sesame'}})
+        .with('https://www.exacttargetapis.com/platform/v1/endpoints/soap',{'access_token'=> 'open_sesame'})
         .and_return({'url' => 'S#.authentication.target'})
       c
     }

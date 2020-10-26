@@ -85,6 +85,12 @@ module FuelSDK
 
       end
     end
+
+    private
+
+    def add_authorization_header(request, authStub)
+      request.add_field('Authorization', 'Bearer ' + authStub.authToken)
+    end
   end
 
   class ET_CreateWSDL
@@ -282,12 +288,13 @@ module FuelSDK
     protected
       def determineStack()
         begin
-          uri = URI.parse("https://www.exacttargetapis.com/platform/v1/endpoints/soap?access_token=" + @authToken)
+          uri = URI.parse('https://www.exacttargetapis.com/platform/v1/endpoints/soap')
           http = Net::HTTP.new(uri.host, uri.port)
 
           http.use_ssl = true
 
           request = Net::HTTP::Get.new(uri.request_uri)
+          request.add_field('Authorization', 'Bearer ' + @authToken)
 
           contextResponse = JSON.parse(http.request(request).body)
           @endpoint = contextResponse['url']
@@ -767,20 +774,16 @@ module FuelSDK
 
 
   class ET_GetRest < ET_Constructor
-    def initialize(authStub, endpoint, qs = nil)
+    def initialize(authStub, endpoint, qs = {})
       authStub.refreshToken
-
-      if qs then
-        qs['access_token'] = authStub.authToken
-      else
-        qs = {"access_token" => authStub.authToken}
-      end
 
       uri = URI.parse(endpoint)
       uri.query = URI.encode_www_form(qs)
       http = Net::HTTP.new(uri.host, uri.port)
       http.use_ssl = true
       request = Net::HTTP::Get.new(uri.request_uri)
+      add_authorization_header(request, authStub)
+
       requestResponse = http.request(request)
 
       @moreResults = false
@@ -795,17 +798,13 @@ module FuelSDK
     def initialize(authStub, endpoint, qs = nil)
       authStub.refreshToken
 
-      if qs then
-        qs['access_token'] = authStub.authToken
-      else
-        qs = {"access_token" => authStub.authToken}
-      end
-
       uri = URI.parse(endpoint)
       uri.query = URI.encode_www_form(qs)
       http = Net::HTTP.new(uri.host, uri.port)
       http.use_ssl = true
       request = Net::HTTP::Get.new(uri.request_uri)
+      add_authorization_header(request, authStub)
+
       requestResponse = http.request(request)
 
       @moreResults = false
@@ -819,18 +818,17 @@ module FuelSDK
     def initialize(authStub, endpoint, payload)
       authStub.refreshToken
 
-      qs = {"access_token" => authStub.authToken}
       uri = URI.parse(endpoint)
-      uri.query = URI.encode_www_form(qs)
       http = Net::HTTP.new(uri.host, uri.port)
       http.use_ssl = true
       request = Net::HTTP::Post.new(uri.request_uri)
       request.body =  payload.to_json
       request.add_field "Content-Type", "application/json"
+      add_authorization_header(request, authStub)
+
       requestResponse = http.request(request)
 
       super(requestResponse, true)
-
     end
   end
 
@@ -838,17 +836,17 @@ module FuelSDK
     def initialize(authStub, endpoint, payload)
       authStub.refreshToken
 
-      qs = {"access_token" => authStub.authToken}
       uri = URI.parse(endpoint)
-      uri.query = URI.encode_www_form(qs)
       http = Net::HTTP.new(uri.host, uri.port)
       http.use_ssl = true
       request = Net::HTTP::Patch.new(uri.request_uri)
       request.body =  payload.to_json
       request.add_field "Content-Type", "application/json"
-      requestResponse = http.request(request)
-      super(requestResponse, true)
+      add_authorization_header(request, authStub)
 
+      requestResponse = http.request(request)
+
+      super(requestResponse, true)
     end
   end
 
@@ -856,13 +854,12 @@ module FuelSDK
     def initialize(authStub, endpoint)
       authStub.refreshToken
 
-      qs = {"access_token" => authStub.authToken}
-
       uri = URI.parse(endpoint)
-      uri.query = URI.encode_www_form(qs)
       http = Net::HTTP.new(uri.host, uri.port)
       http.use_ssl = true
       request = Net::HTTP::Delete.new(uri.request_uri)
+      add_authorization_header(request, authStub)
+
       requestResponse = http.request(request)
       super(requestResponse, true)
 
