@@ -3,9 +3,11 @@ require 'spec_helper'
 describe MarketingCloudSDK::Client do
 
   context 'Empty string REST endpoint, no Auth attribute' do
-
-    client1 = MarketingCloudSDK::Client.new 'client' => {'id' => '1234', 'secret' => 'ssssh',
-                                                        'base_api_url' => ''}
+    before {
+      allow_any_instance_of(MarketingCloudSDK::Client).to receive(:refresh).and_return(true)
+    }
+    let(:client1) { MarketingCloudSDK::Client.new 'client' => {'id' => '1234', 'secret' => 'ssssh',
+                                                        'base_api_url' => ''} }
 
     it 'Should use REST endpoint default value if base_api_url endpoint is an empty string in config' do
       expect(client1.base_api_url).to eq 'https://www.exacttargetapis.com'
@@ -17,9 +19,11 @@ describe MarketingCloudSDK::Client do
   end
 
   context 'Blank string REST endpoint' do
-
-    client2 = MarketingCloudSDK::Client.new 'client' => {'id' => '1234', 'secret' => 'ssssh',
-                                                         'base_api_url' => '   '}
+    before {
+      allow_any_instance_of(MarketingCloudSDK::Client).to receive(:refresh).and_return(true)
+    }
+    let(:client2) { MarketingCloudSDK::Client.new 'client' => {'id' => '1234', 'secret' => 'ssssh',
+                                                         'base_api_url' => '   '} }
 
     it 'Should use REST endpoint default value if REST endpoint is a blank string in config' do
       expect(client2.base_api_url).to eq 'https://www.exacttargetapis.com'

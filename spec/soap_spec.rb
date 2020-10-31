@@ -1,8 +1,23 @@
 require 'spec_helper'
 
-describe MarketingCloudSDK::Soap do
+def get_test_stub
+  {'client' => {
+      'use_oAuth2_authentication' => false,
+      'id' => 'id',
+      'secret' => 'secret',
+      'request_token_url' => 'request_token_url',
+      'account_id' => 'account_id',
+      'authorization_code' => 'authorization_code',
+      'redirect_URI' => 'redirect_URI'
+  }}
+end
 
-  let(:client) { MarketingCloudSDK::Client.new }
+describe MarketingCloudSDK::Soap do
+  before(:each) do
+    allow_any_instance_of(MarketingCloudSDK::Client).to receive(:refresh).and_return(true)
+  end
+
+  let(:client) { MarketingCloudSDK::Client.new get_test_stub }
 
   subject { client }
 
@@ -34,6 +49,8 @@ describe MarketingCloudSDK::Soap do
 
   describe '#header' do
     it 'raises an exception when internal_token is missing' do
+      client.internal_token = nil
+
       expect { client.header }.to raise_exception 'Require legacy token for soap header'
     end
 
@@ -134,57 +151,6 @@ describe MarketingCloudSDK::Soap do
               }],
             :attributes! => {'Objects' => {'xsi:type' => ('tns:Subscriber')}}
           }])
-      end
-    end
-  end
-
-  describe '#add_attributes_inline' do
-    context 'when the message has an array of objects with attributes' do
-      let(:message) {{
-        'objects' => [
-          {'key1' => 'value1', 'key2' => 'value2'},
-          {'key3' => 'value3', 'key4' => 'value4'}
-        ],
-        attributes!: { 'objects' => { 'key0' => 'value0', 'keyX' => 'valueX' } }
-      }}
-
-      it 'adds attributes inline defined in \'attributes!\' to each object' do
-        expect(subject.send(:add_attributes_inline, message)).to eq({
-          'objects' => [
-              { 'key1' => 'value1', 'key2' => 'value2', '@key0' => 'value0', '@keyX' => 'valueX' },
-              { 'key3' => 'value3', 'key4' => 'value4', '@key0' => 'value0', '@keyX' => 'valueX' }
-            ],
-          :attributes! => { 'objects' => { 'key0' => 'value0', 'keyX' => 'valueX' } }
-        })
-      end
-    end
-
-    context 'when the message has nested objects with attributes' do
-      let(:message) {{
-        'parent' => {
-          'child1' => {
-            'key1' => 'value2',
-            'child3' => { 'value5' => 'value6' },
-            :attributes! => { 'child3' => { 'keyX' => 'valueX' } }
-          },
-          'child2' => { 'key3' => 'value4' },
-          :attributes! => { 'child1' => { 'key0' => 'value0' } }
-        }
-      }}
-
-      it 'adds attributes inline defined in \'attributes!\' to each object' do
-        expect(subject.send(:add_attributes_inline, message)).to eq({
-          'parent' => {
-            'child1' => {
-              'key1' => 'value2',
-              '@key0' => 'value0',
-              'child3' => { 'value5' => 'value6', '@keyX' => 'valueX' },
-              :attributes! => { 'child3' => { 'keyX' => 'valueX' } }
-            },
-            'child2' => { 'key3' => 'value4' },
-            :attributes! => { 'child1' => { 'key0' => 'value0' } }
-          }
-        })
       end
     end
   end
