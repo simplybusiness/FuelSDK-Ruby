@@ -13,4 +13,4 @@ jobs:
       - uses: simplybusiness/version-forget-me-not@v1
         env:
           ACCESS_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          VERSION_FILE_PATH: "lib/fuelsdk/version.rb"
+          VERSION_FILE_PATH: "lib/marketingcloudsdk/version.rb"

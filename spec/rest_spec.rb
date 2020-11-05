@@ -1,6 +1,23 @@
 require 'spec_helper'
-describe FuelSDK::Rest do
-  let(:client) { FuelSDK::Client.new }
+
+def get_test_stub
+  {'client' => {
+      'use_oAuth2_authentication' => true,
+      'id' => 'id',
+      'secret' => 'secret',
+      'request_token_url' => 'request_token_url',
+      'account_id' => 'account_id',
+      'authorization_code' => 'authorization_code',
+      'redirect_URI' => 'redirect_URI'
+  }}
+end
+
+describe MarketingCloudSDK::Rest do
+  before(:each) do
+    allow_any_instance_of(MarketingCloudSDK::Client).to receive(:refresh).and_return(true)
+  end
+
+  let(:client) { MarketingCloudSDK::Client.new get_test_stub }
 
   subject { client }
   it { should respond_to(:rest_get) }
