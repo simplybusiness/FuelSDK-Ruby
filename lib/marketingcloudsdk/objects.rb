@@ -395,7 +395,7 @@ module MarketingCloudSDK
 			else
 				tscall = {"TriggeredSendDefinition" => self.properties, "Subscribers" => @subscribers, "Attributes" => @attributes }
 		    end
-			MarketingCloudSDK::TriggeredSendResponse.new(client.soap_post 'TriggeredSend', tscall)
+			client.soap_post 'TriggeredSend', tscall
 		end
 	end
 
