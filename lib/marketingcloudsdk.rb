@@ -48,7 +48,6 @@ module MarketingCloudSDK
   autoload :Rest, 'marketingcloudsdk/rest'
   require 'marketingcloudsdk/client'
   require 'marketingcloudsdk/objects'
-  require 'marketingcloudsdk/triggered_send_response'
 end
 
 # backwards compatability
